@@ -16,7 +16,7 @@ namespace Bugoom.Controllers
             this.usersService = usersService;
         }
 
-        [HttpGet(Name = "GetAll")]
+        [HttpGet(Name = "GetAllUsers")]
         public async Task<IEnumerable<User>> GetAll()
         {
             var allUsers = await usersService.GetAll();

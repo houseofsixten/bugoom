@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bugoom
 {
@@ -15,6 +17,8 @@ namespace Bugoom
             var folder = Environment.SpecialFolder.LocalApplicationData;
             var path = Environment.GetFolderPath(folder);
             DbPath = System.IO.Path.Join(path, "bugging.db");
+
+            Console.WriteLine(DbPath);
         }
 
         // The following configures EF to create a Sqlite database file in the
@@ -25,34 +29,36 @@ namespace Bugoom
 
     public enum BugStatus
     {
-        Open = 0,
-        InProgress = 1,
+        Open = 1,
         Assigned = 2,
-        FixDeployed = 3,
-        Complete = 4
+        Fixed = 3,
+        Closed = 4
     }
 
     public enum UserRole
     {
-        User  = 0,
-        Staff = 1,
-        Boss = 2
+        User  = 1,
+        Staff = 2,
+        Boss = 3
     }
 
     public class User
     {
+        [Key]
         public int Id { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string Username { get; set; }        
         public UserRole Role { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 
     public class Bug
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int CreatedByUserId { get; set; }
         public int? AssignedToUserId { get; set; }
+        public string Title {  get; set; }
         public string Description { get; set; }
         public BugStatus Status { get; set; }
         public List<BugChange> Changes { get; set; }
@@ -62,11 +68,13 @@ namespace Bugoom
 
     public class BugChange
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int BugId { get; set; }
         public int CreatedByUserId { get; set; }
         public string Description { get; set; }
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
         public DateTime CreatedAt { get; set; }
 
     }
