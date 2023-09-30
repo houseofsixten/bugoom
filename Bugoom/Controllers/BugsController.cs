@@ -1,4 +1,5 @@
-﻿using Bugoom.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using Bugoom.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bugoom.Controllers
@@ -23,6 +24,13 @@ namespace Bugoom.Controllers
             return allBugs;
         }
 
+        [HttpGet(Name = "GetStatus")]
+        public async Task<Bug> GetStatus([FromQuery][Required] int bugId, [FromQuery][Required] int createdByUserId)
+        {
+            var myBug = await bugsService.GetStatus(bugId, createdByUserId);
+            return myBug;
+        }
+
         [HttpPost(Name = "Open")]
         public async Task<Bug> Open([FromBody] OpenBugView openBugView)
         {
@@ -35,6 +43,27 @@ namespace Bugoom.Controllers
         {
             var newlyAssignedBug = await bugsService.Assign(assignBugView);
             return newlyAssignedBug;
+        }
+
+        [HttpPost(Name = "Fix")]
+        public async Task<Bug> Fix([FromBody] FixBugView fixBugView)
+        {
+            var newlyFixedBug = await bugsService.Fix(fixBugView);
+            return newlyFixedBug;
+        }
+
+        [HttpPost(Name = "Comment")]
+        public async Task<Bug> Comment([FromBody] CommentView commentView)
+        {
+            var newlyCommentedBug = await bugsService.Comment(commentView);
+            return newlyCommentedBug;
+        }
+
+        [HttpPost(Name = "Close")]
+        public async Task<Bug> Close([FromBody] CloseBugView closeBugView)
+        {
+            var newlyClosedBug = await bugsService.Close(closeBugView);
+            return newlyClosedBug;
         }
     }
 }
