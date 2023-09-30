@@ -11,12 +11,6 @@ namespace Bugoom
             this.context = context;
         }
 
-        public async void Add(User user)
-        {
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
-        }
-
         public async Task<IEnumerable<User>> GetAll()
         {
             var users = await context.Users.ToListAsync();

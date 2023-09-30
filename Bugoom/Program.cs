@@ -1,3 +1,4 @@
+using System.Runtime.Intrinsics.X86;
 using System.Text.Json.Serialization;
 using Bugoom;
 using Bugoom.Interfaces;
@@ -17,33 +18,49 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<BuggingContext>();
 builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IBugsService, BugsService>();
 
 var app = builder.Build();
 
+// Apply the migration to create and update the sqlite database,
+// then create one Boss user, two Staff users, and two User users.
+// If the database is already up to date and the users already exist,
+// nothing will happen.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<BuggingContext>();
     db.Database.Migrate();
 
-    var users = db.Users.ToList();
-    foreach (var user in users)
+    var seedUserRoles = new Dictionary<string, UserRole> {
+        { "TheBoss", UserRole.Boss },
+        { "FirstStaff", UserRole.Staff },
+        { "SecondStaff", UserRole.Staff },
+        { "FirstUser", UserRole.User },
+        { "SecondUser", UserRole.User },
+    };
+
+    int seedUserId = 1;
+
+    foreach (KeyValuePair<string, UserRole> kvp in seedUserRoles)
     {
-        db.Users.Remove(user);
-    }
-    db.SaveChanges();
-
-    db.Users.Add(
-        new User
+        var user = db.Users.Where(u => u.Id == seedUserId).FirstOrDefault();
+        if (user == null)
         {
-            Id = 1,
-            Username = "TheBoss",
-            Password = "LikeABoss",
-            Role = UserRole.Boss,
-            CreatedAt = DateTime.UtcNow
-        }
-    );
+            db.Users.Add(
+                new User
+                {
+                    Id = seedUserId,
+                    Username = kvp.Key,
+                    Role = kvp.Value,
+                    CreatedAt = DateTime.UtcNow
+                }
+            );
 
-    db.SaveChanges();
+            db.SaveChanges();
+        }        
+
+        seedUserId++;
+    }
 }
 
 // Configure the HTTP request pipeline.
