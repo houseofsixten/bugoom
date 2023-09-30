@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 
 namespace Bugoom
@@ -17,16 +18,64 @@ namespace Bugoom
 
     public class OpenBugView
     {
+        [Required]
         public int OpenedByUserId { get; set; }
+
+        [Required]
         public string Title { get; set; }
+
+        [Required]
         public string Description { get; set; }
     }
 
     public class AssignBugView
     {
+        [Required]
         public int BugId { get; set; }
+
+        [Required]
         public int AssignedByStaffId { get; set; }
-        public int AssignedToStaffId { get; set; }        
+
+        [Required]
+        public int AssignedToStaffId { get; set; }
+
+        [Required]
+        public string Notes { get; set; }
+    }
+
+    public class FixBugView
+    {
+        [Required]
+        public int BugId { get; set; }
+
+        [Required]
+        public int FixedByStaffId { get; set; }
+
+        [Required]
+        public string Notes { get; set; }
+    }
+
+    public class CommentView
+    {
+        [Required]
+        public int BugId { get; set; }
+
+        [Required]
+        public int StaffId { get; set; }
+
+        [Required]
+        public string Notes { get; set; }
+    }
+
+    public class CloseBugView
+    {
+        [Required]
+        public int BugId { get; set; }
+
+        [Required]
+        public int OpenedByUserId { get; set; }
+
+        [Required]
         public string Notes { get; set; }
     }
 
